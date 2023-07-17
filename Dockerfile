@@ -1,18 +1,14 @@
-FROM golang:1.9.4-alpine3.7 AS builder
+# syntax=docker/dockerfile:1.6
+FROM golang:1.18-alpine3.17 AS build
+
 WORKDIR /go/src/github.com/gliderlabs/registrator/
 COPY . .
-RUN \
-	apk add --no-cache curl git \
-	&& curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh \
-	&& dep ensure -vendor-only \
-	&& CGO_ENABLED=0 GOOS=linux go build \
-		-a -installsuffix cgo \
-		-ldflags "-X main.Version=$(cat VERSION)" \
-		-o bin/registrator \
-		.
 
-FROM alpine:3.7
-RUN apk add --no-cache ca-certificates
-COPY --from=builder /go/src/github.com/gliderlabs/registrator/bin/registrator /bin/registrator
+ARG VERSION
+RUN --mount=type=cache,target=/go/pkg/ CGO_ENABLED=0 go build -ldflags "-X main.Version=${VERSION}"
 
-ENTRYPOINT ["/bin/registrator"]
+FROM alpine:3.17 AS registrator
+
+COPY --from=build /go/src/github.com/gliderlabs/registrator/registrator /usr/local/bin/
+
+ENTRYPOINT ["/usr/local/bin/registrator"]
