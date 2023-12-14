@@ -1,5 +1,4 @@
 # docker-bake.hcl
-variable "REPOSITORY_PREFIX" { default = "" }
 variable "VERSION" { default = "7.1.0" }
 
 group "default" {
@@ -18,8 +17,8 @@ target "registrator" {
     "org.opencontainers.image.version" = "${VERSION}",
   }
   tags = [
-    "${REPOSITORY_PREFIX}registrator:${VERSION}",
-    "${REPOSITORY_PREFIX}registrator:latest",
+    "imanagedave/registrator:${VERSION}",
+    "imanagedave/registrator:latest",
   ]
   target = "registrator"
 }
