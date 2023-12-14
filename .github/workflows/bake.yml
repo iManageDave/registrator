@@ -22,5 +22,5 @@ jobs:
       - name: Bake
         uses: docker/bake-action@v4
         with:
-          set: *.platform=linux/amd64,linux/arm64
+          set: "*.platform=linux/amd64,linux/arm64"
           #TODO push: true
